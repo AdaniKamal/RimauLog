@@ -1238,12 +1238,6 @@ button {
   grid-template-columns: 240px 1fr;
   gap: 14px;
 }
-.notes-layout.review-mode {
-  grid-template-columns: 1fr;
-}
-.review-hidden {
-  display: none;
-}
 .notes-list {
   display: flex;
   flex-direction: column;
@@ -1624,16 +1618,14 @@ button {
 }
 .diff-line {
   border-bottom: 1px solid var(--line);
-  border-left: 4px solid transparent;
-  padding: 0 14px;
+  padding: 0 16px;
 }
 .diff-line:last-child {
   border-bottom: 0;
 }
 .diff-line.diff-added,
 .diff-line.diff-removed {
-  border-left-color: #b42318;
-  background: #fff0ee;
+  background: transparent;
 }
 .diff-line.diff-added *,
 .diff-line.diff-removed * {
@@ -1642,22 +1634,12 @@ button {
 .diff-line.diff-removed * {
   text-decoration: line-through;
 }
-.diff-line .diff-label {
-  display: block;
-  font-size: 8px;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  padding-top: 9px;
-  text-decoration: none;
-  text-transform: uppercase;
+.inline-review .diff-line.diff-added {
+  border-left: 3px solid #b42318;
 }
-.diff-line.diff-removed .diff-label {
-  text-decoration: none;
-}
-.no-changes {
-  color: #687772;
-  margin: 0;
-  padding: 16px;
+.inline-review .diff-line.diff-removed {
+  border-left: 3px dashed #b42318;
+  opacity: 0.78;
 }
 .markdown-preview.compact {
   min-height: 0;

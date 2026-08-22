@@ -6,7 +6,7 @@ RimauLog is a private multi-student mentoring workspace for a six-month cloud-se
 
 | Item                | Current status                                               |
 | ------------------- | ------------------------------------------------------------ |
-| Current version     | **v10.2**                                                    |
+| Current version     | **v10.3**                                                    |
 | Release stage       | Usable beta / active development                             |
 | Last updated        | 22 August 2026                                               |
 | Hosting             | Vercel                                                       |
@@ -35,6 +35,7 @@ RimauLog is a private multi-student mentoring workspace for a six-month cloud-se
 | v10.0   | 22 August 2026 | Added visible/cancellable pending invitations, renamed Timetable to Calendar, added mentor cancellation for requested/confirmed meetings, protected unsaved drafts from background auth/realtime refreshes, and added H1/H2/H3, inline code and tracked mentor note edits. | None                                                                               |
 | v10.1   | 22 August 2026 | Replaced raw mentor-note comparisons with rendered line-level highlighting and added Copy buttons to inline code and commands.                                                                                                                                             | None                                                                               |
 | v10.2   | 23 August 2026 | Student mentor-edit review now hides the full note and displays only affected lines, with previous text struck through and mentor replacements highlighted in red.                                                                                                         | None                                                                               |
+| v10.3   | 23 August 2026 | Mentor suggestions now appear directly inside the student's normal note: unchanged content stays normal, additions and replacements are red, and removals are red with strikethrough until accepted or rejected.                                                           | None                                                                               |
 
 For an existing deployment, run only the migration files that have not already been applied. Do not rerun a completed migration simply because the README version changed.
 

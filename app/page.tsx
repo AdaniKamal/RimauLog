@@ -1960,9 +1960,7 @@ function Notes({
           <button onClick={newNote}>＋ New note</button>
         )}
       </div>
-      <div
-        className={`notes-layout${reviewingMentorEdit ? " review-mode" : ""}`}
-      >
+      <div className="notes-layout">
         <aside className="card notes-list">
           <h3>All notes</h3>
           {rows.map((n) => (
@@ -1982,9 +1980,7 @@ function Notes({
           ))}
           {!rows.length && <p>No notes yet.</p>}
         </aside>
-        <section
-          className={`card editor${reviewingMentorEdit ? " review-hidden" : ""}`}
-        >
+        <section className="card editor">
           <div className="editor-actions">
             <input
               value={title}
@@ -1993,7 +1989,7 @@ function Notes({
               onChange={(e) => setTitle(e.target.value)}
             />
             <button onClick={download}>Download</button>
-            {app.profile.role === "student" && (
+            {app.profile.role === "student" && !reviewingMentorEdit && (
               <button onClick={saveStudent}>
                 {selected ? "Save note" : "Add note"}
               </button>
@@ -2009,19 +2005,23 @@ function Notes({
           )}
           <div className="note-tabs">
             <button
-              className={noteMode === "preview" ? "sel" : ""}
+              className={
+                noteMode === "preview" || reviewingMentorEdit ? "sel" : ""
+              }
               onClick={() => setNoteMode("preview")}
             >
               Preview
             </button>
-            <button
-              className={noteMode === "write" ? "sel" : ""}
-              onClick={() => setNoteMode("write")}
-            >
-              Write
-            </button>
+            {!reviewingMentorEdit && (
+              <button
+                className={noteMode === "write" ? "sel" : ""}
+                onClick={() => setNoteMode("write")}
+              >
+                Write
+              </button>
+            )}
           </div>
-          {noteMode === "write" ? (
+          {noteMode === "write" && !reviewingMentorEdit ? (
             <>
               <div className="format-bar" aria-label="Note formatting">
                 <button
@@ -2109,6 +2109,11 @@ function Notes({
                 placeholder="Write your weekly reflection…"
               />
             </>
+          ) : reviewingMentorEdit && selected ? (
+            <DiffPreview
+              original={selected.body_markdown}
+              proposed={selected.proposed_body_markdown || ""}
+            />
           ) : (
             <MarkdownPreview
               value={app.profile.role === "mentor" ? proposal : body}
@@ -2122,13 +2127,9 @@ function Notes({
             <span className="status pending">Mentor edit requested</span>
             <h3>Review the mentor&apos;s suggested changes</h3>
             <p>
-              Red text shows what the mentor added or changed. Removed text is
-              crossed out.
+              The note above remains unchanged until you decide. Mentor edits
+              appear in red, and removed text appears crossed out.
             </p>
-            <DiffPreview
-              original={selected.body_markdown}
-              proposed={selected.proposed_body_markdown || ""}
-            />
             <button onClick={() => decide(true)}>Accept changes</button>
             <button className="soft" onClick={() => decide(false)}>
               Reject changes
@@ -2251,25 +2252,18 @@ function DiffPreview({
       i--;
     }
   }
-  const lines = output.reverse().filter((part) => part.kind !== "same");
+  const lines = output.reverse();
   return (
-    <section className="rendered-diff" aria-label="Mentor note changes">
-      {lines.length ? (
-        lines.map((part, index) => (
-          <div key={index} className={`diff-line diff-${part.kind}`}>
-            <span className="diff-label">
-              {part.kind === "removed" ? "Previous" : "Mentor update"}
-            </span>
-            {part.text.trim() ? (
-              <MarkdownPreview value={part.text} compact />
-            ) : (
-              <span className="blank-line">Blank line</span>
-            )}
-          </div>
-        ))
-      ) : (
-        <p className="no-changes">No content changes were found.</p>
-      )}
+    <section className="rendered-diff inline-review" aria-label="Mentor edits">
+      {lines.map((part, index) => (
+        <div key={index} className={`diff-line diff-${part.kind}`}>
+          {part.text.trim() ? (
+            <MarkdownPreview value={part.text} compact />
+          ) : (
+            <span className="blank-line" aria-hidden="true" />
+          )}
+        </div>
+      ))}
     </section>
   );
 }
