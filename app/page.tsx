@@ -2126,10 +2126,6 @@ function Notes({
           <section className="card approval">
             <span className="status pending">Mentor edit requested</span>
             <h3>Review the mentor&apos;s suggested changes</h3>
-            <p>
-              The note above remains unchanged until you decide. Mentor edits
-              appear in red, and removed text appears crossed out.
-            </p>
             <button onClick={() => decide(true)}>Accept changes</button>
             <button className="soft" onClick={() => decide(false)}>
               Reject changes

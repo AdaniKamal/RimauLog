@@ -1611,17 +1611,10 @@ button {
   font: 11px monospace;
 }
 .rendered-diff {
-  border: 1px solid var(--line);
-  border-radius: 9px;
-  margin: 16px 0;
-  overflow: hidden;
+  margin: 0;
 }
 .diff-line {
-  border-bottom: 1px solid var(--line);
-  padding: 0 16px;
-}
-.diff-line:last-child {
-  border-bottom: 0;
+  padding: 0;
 }
 .diff-line.diff-added,
 .diff-line.diff-removed {
@@ -1636,14 +1629,16 @@ button {
 }
 .inline-review .diff-line.diff-added {
   border-left: 3px solid #b42318;
+  padding-left: 12px;
 }
 .inline-review .diff-line.diff-removed {
   border-left: 3px dashed #b42318;
   opacity: 0.78;
+  padding-left: 12px;
 }
 .markdown-preview.compact {
   min-height: 0;
-  padding: 8px 0;
+  padding: 4px 0;
 }
 .markdown-preview.compact > :first-child {
   margin-top: 0;
