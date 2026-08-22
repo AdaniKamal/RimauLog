@@ -6,7 +6,7 @@ RimauLog is a private multi-student mentoring workspace for a six-month cloud-se
 
 | Item                | Current status                                               |
 | ------------------- | ------------------------------------------------------------ |
-| Current version     | **v10.5**                                                    |
+| Current version     | **v10.6**                                                    |
 | Release stage       | Usable beta / active development                             |
 | Last updated        | 22 August 2026                                               |
 | Hosting             | Vercel                                                       |
@@ -38,6 +38,7 @@ RimauLog is a private multi-student mentoring workspace for a six-month cloud-se
 | v10.3   | 23 August 2026 | Mentor suggestions now appear directly inside the student's normal note: unchanged content stays normal, additions and replacements are red, and removals are red with strikethrough until accepted or rejected.                                                           | None                                                                               |
 | v10.4   | 23 August 2026 | Simplified student note review by removing the explanatory copy, horizontal separators and comparison box while preserving red mentor-edit highlighting.                                                                                                                   | None                                                                               |
 | v10.5   | 23 August 2026 | Made mentor-edit comparison Markdown-block aware so tables remain formatted, retained inline red changes, and attached Accept/Reject controls directly beneath the note.                                                                                                   | None                                                                               |
+| v10.6   | 23 August 2026 | Removed the duplicate pending label, refreshed the exact proposed note for student review, prevented empty mentor-edit requests, and corrected the Reject button text colour.                                                                                              | None                                                                               |
 
 For an existing deployment, run only the migration files that have not already been applied. Do not rerun a completed migration simply because the README version changed.
 

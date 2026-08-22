@@ -1655,6 +1655,7 @@ button {
 .editor > .inline-approval button {
   border: 1px solid var(--line);
   background: #fff;
+  color: #17302d;
   font-weight: 700;
 }
 .editor > .inline-approval button:first-child {

@@ -1837,6 +1837,7 @@ function Notes({
     [title, setTitle] = useState(""),
     [body, setBody] = useState(""),
     [proposal, setProposal] = useState(""),
+    [reviewProposal, setReviewProposal] = useState(""),
     [noteMode, setNoteMode] = useState<"preview" | "write">("preview"),
     editorRef = useRef<HTMLTextAreaElement>(null);
   useEffect(() => {
@@ -1850,7 +1851,44 @@ function Notes({
       setBody("");
       setProposal("");
     }
-  }, [selected?.id, selectedId]);
+  }, [
+    selected?.id,
+    selected?.body_markdown,
+    selected?.proposed_body_markdown,
+    selected?.proposal_status,
+    selected?.updated_at,
+    selectedId,
+  ]);
+  useEffect(() => {
+    if (
+      app.profile.role !== "student" ||
+      !selected ||
+      selected.proposal_status !== "pending"
+    ) {
+      setReviewProposal("");
+      return;
+    }
+    let active = true;
+    setReviewProposal(selected.proposed_body_markdown || "");
+    app.client
+      .from("notes")
+      .select("proposed_body_markdown")
+      .eq("id", selected.id)
+      .single()
+      .then(({ data }) => {
+        if (active) setReviewProposal(data?.proposed_body_markdown || "");
+      });
+    return () => {
+      active = false;
+    };
+  }, [
+    app.client,
+    app.profile.role,
+    selected?.id,
+    selected?.proposal_status,
+    selected?.proposed_body_markdown,
+    selected?.updated_at,
+  ]);
   useEffect(() => {
     if (selectedId !== "new" && !rows.some((r) => r.id === selectedId))
       setSelectedId(rows[0]?.id || "new");
@@ -1905,6 +1943,8 @@ function Notes({
   }
   async function propose() {
     if (!selected) return notify("Select an existing student note first");
+    if (proposal === selected.body_markdown)
+      return notify("Edit the note before requesting student approval");
     const { error } = await app.client
       .from("notes")
       .update({
@@ -1998,11 +2038,6 @@ function Notes({
               <button onClick={propose}>Request edit</button>
             )}
           </div>
-          {selected && selected.proposal_status !== "none" && (
-            <p className={`status ${selected.proposal_status}`}>
-              Mentor edit: {pretty(selected.proposal_status)}
-            </p>
-          )}
           <div className="note-tabs">
             <button
               className={
@@ -2112,7 +2147,7 @@ function Notes({
           ) : reviewingMentorEdit && selected ? (
             <DiffPreview
               original={selected.body_markdown}
-              proposed={selected.proposed_body_markdown || ""}
+              proposed={reviewProposal}
             />
           ) : (
             <MarkdownPreview
