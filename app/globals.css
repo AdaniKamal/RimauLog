@@ -1238,6 +1238,12 @@ button {
   grid-template-columns: 240px 1fr;
   gap: 14px;
 }
+.notes-layout.review-mode {
+  grid-template-columns: 1fr;
+}
+.review-hidden {
+  display: none;
+}
 .notes-list {
   display: flex;
   flex-direction: column;
@@ -1635,6 +1641,23 @@ button {
 }
 .diff-line.diff-removed * {
   text-decoration: line-through;
+}
+.diff-line .diff-label {
+  display: block;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  padding-top: 9px;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+.diff-line.diff-removed .diff-label {
+  text-decoration: none;
+}
+.no-changes {
+  color: #687772;
+  margin: 0;
+  padding: 16px;
 }
 .markdown-preview.compact {
   min-height: 0;

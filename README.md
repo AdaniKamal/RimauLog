@@ -6,7 +6,7 @@ RimauLog is a private multi-student mentoring workspace for a six-month cloud-se
 
 | Item                | Current status                                               |
 | ------------------- | ------------------------------------------------------------ |
-| Current version     | **v10.1**                                                    |
+| Current version     | **v10.2**                                                    |
 | Release stage       | Usable beta / active development                             |
 | Last updated        | 22 August 2026                                               |
 | Hosting             | Vercel                                                       |
@@ -34,6 +34,7 @@ RimauLog is a private multi-student mentoring workspace for a six-month cloud-se
 | v9.1    | 22 August 2026 | Corrected mentor-dashboard status to use each student's mentorship timeline and fixed the sidebar logo alignment.                                                                                                                                                          | None                                                                               |
 | v10.0   | 22 August 2026 | Added visible/cancellable pending invitations, renamed Timetable to Calendar, added mentor cancellation for requested/confirmed meetings, protected unsaved drafts from background auth/realtime refreshes, and added H1/H2/H3, inline code and tracked mentor note edits. | None                                                                               |
 | v10.1   | 22 August 2026 | Replaced raw mentor-note comparisons with rendered line-level highlighting and added Copy buttons to inline code and commands.                                                                                                                                             | None                                                                               |
+| v10.2   | 23 August 2026 | Student mentor-edit review now hides the full note and displays only affected lines, with previous text struck through and mentor replacements highlighted in red.                                                                                                         | None                                                                               |
 
 For an existing deployment, run only the migration files that have not already been applied. Do not rerun a completed migration simply because the README version changed.
 

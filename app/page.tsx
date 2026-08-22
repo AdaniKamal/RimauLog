@@ -1944,6 +1944,8 @@ function Notes({
     a.download = `${(title || "note").toLowerCase().replace(/[^a-z0-9]+/g, "-")}.md`;
     a.click();
   }
+  const reviewingMentorEdit =
+    app.profile.role === "student" && selected?.proposal_status === "pending";
   return (
     <>
       <div className="intro">
@@ -1958,7 +1960,9 @@ function Notes({
           <button onClick={newNote}>＋ New note</button>
         )}
       </div>
-      <div className="notes-layout">
+      <div
+        className={`notes-layout${reviewingMentorEdit ? " review-mode" : ""}`}
+      >
         <aside className="card notes-list">
           <h3>All notes</h3>
           {rows.map((n) => (
@@ -1978,7 +1982,9 @@ function Notes({
           ))}
           {!rows.length && <p>No notes yet.</p>}
         </aside>
-        <section className="card editor">
+        <section
+          className={`card editor${reviewingMentorEdit ? " review-hidden" : ""}`}
+        >
           <div className="editor-actions">
             <input
               value={title}
@@ -2245,18 +2251,25 @@ function DiffPreview({
       i--;
     }
   }
-  const lines = output.reverse();
+  const lines = output.reverse().filter((part) => part.kind !== "same");
   return (
     <section className="rendered-diff" aria-label="Mentor note changes">
-      {lines.map((part, index) => (
-        <div key={index} className={`diff-line diff-${part.kind}`}>
-          {part.text.trim() ? (
-            <MarkdownPreview value={part.text} compact />
-          ) : (
-            <span className="blank-line">Blank line</span>
-          )}
-        </div>
-      ))}
+      {lines.length ? (
+        lines.map((part, index) => (
+          <div key={index} className={`diff-line diff-${part.kind}`}>
+            <span className="diff-label">
+              {part.kind === "removed" ? "Previous" : "Mentor update"}
+            </span>
+            {part.text.trim() ? (
+              <MarkdownPreview value={part.text} compact />
+            ) : (
+              <span className="blank-line">Blank line</span>
+            )}
+          </div>
+        ))
+      ) : (
+        <p className="no-changes">No content changes were found.</p>
+      )}
     </section>
   );
 }
