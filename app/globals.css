@@ -1610,24 +1610,67 @@ button {
   color: #8b3e36;
   font: 11px monospace;
 }
-.diff-preview {
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-  background: #f7f7f4;
+.rendered-diff {
   border: 1px solid var(--line);
   border-radius: 9px;
-  padding: 18px;
-  font: 12px/1.8 monospace;
-  color: #31443f;
+  margin: 16px 0;
+  overflow: hidden;
 }
-.diff-added {
-  color: #b42318;
+.diff-line {
+  border-bottom: 1px solid var(--line);
+  border-left: 4px solid transparent;
+  padding: 0 14px;
+}
+.diff-line:last-child {
+  border-bottom: 0;
+}
+.diff-line.diff-added,
+.diff-line.diff-removed {
+  border-left-color: #b42318;
   background: #fff0ee;
 }
-.diff-removed {
-  color: #b42318;
-  background: #fff0ee;
+.diff-line.diff-added *,
+.diff-line.diff-removed * {
+  color: #b42318 !important;
+}
+.diff-line.diff-removed * {
   text-decoration: line-through;
+}
+.markdown-preview.compact {
+  min-height: 0;
+  padding: 8px 0;
+}
+.markdown-preview.compact > :first-child {
+  margin-top: 0;
+}
+.markdown-preview.compact > :last-child {
+  margin-bottom: 0;
+}
+.blank-line {
+  display: block;
+  min-height: 12px;
+  color: #8a9692;
+  font-size: 10px;
+  font-style: italic;
+  padding: 5px 0;
+}
+.code-chip {
+  align-items: center;
+  display: inline-flex;
+  gap: 5px;
+  margin: 1px 2px;
+  vertical-align: middle;
+}
+.code-chip button {
+  background: #fff;
+  border: 1px solid #cbd4cf;
+  border-radius: 5px;
+  color: #31574e;
+  min-height: 0;
+  padding: 2px 7px;
+  font:
+    600 9px/1.4 Arial,
+    sans-serif;
 }
 .approval > .status {
   display: inline-block;

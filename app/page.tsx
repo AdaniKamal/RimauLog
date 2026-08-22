@@ -1996,6 +1996,11 @@ function Notes({
               <button onClick={propose}>Request edit</button>
             )}
           </div>
+          {selected && selected.proposal_status !== "none" && (
+            <p className={`status ${selected.proposal_status}`}>
+              Mentor edit: {pretty(selected.proposal_status)}
+            </p>
+          )}
           <div className="note-tabs">
             <button
               className={noteMode === "preview" ? "sel" : ""}
@@ -2127,7 +2132,13 @@ function Notes({
     </>
   );
 }
-function MarkdownPreview({ value }: { value: string }) {
+function MarkdownPreview({
+  value,
+  compact = false,
+}: {
+  value: string;
+  compact?: boolean;
+}) {
   if (!value.trim())
     return (
       <section className="markdown-preview empty-preview">
@@ -2194,7 +2205,11 @@ function MarkdownPreview({ value }: { value: string }) {
     else if (line.trim()) blocks.push(<p key={i}>{inlineMarkdown(line)}</p>);
     else blocks.push(<br key={i} />);
   }
-  return <section className="markdown-preview">{blocks}</section>;
+  return (
+    <section className={`markdown-preview${compact ? " compact" : ""}`}>
+      {blocks}
+    </section>
+  );
 }
 function DiffPreview({
   original,
@@ -2203,10 +2218,8 @@ function DiffPreview({
   original: string;
   proposed: string;
 }) {
-  const before = original.split(/(\s+)/),
-    after = proposed.split(/(\s+)/);
-  if (before.length * after.length > 360000)
-    return <pre className="diff-preview diff-added">{proposed}</pre>;
+  const before = original.split("\n"),
+    after = proposed.split("\n");
   const matrix = Array.from({ length: before.length + 1 }, () =>
     Array(after.length + 1).fill(0),
   );
@@ -2232,14 +2245,19 @@ function DiffPreview({
       i--;
     }
   }
+  const lines = output.reverse();
   return (
-    <pre className="diff-preview">
-      {output.reverse().map((part, index) => (
-        <span key={index} className={`diff-${part.kind}`}>
-          {part.text}
-        </span>
+    <section className="rendered-diff" aria-label="Mentor note changes">
+      {lines.map((part, index) => (
+        <div key={index} className={`diff-line diff-${part.kind}`}>
+          {part.text.trim() ? (
+            <MarkdownPreview value={part.text} compact />
+          ) : (
+            <span className="blank-line">Blank line</span>
+          )}
+        </div>
       ))}
-    </pre>
+    </section>
   );
 }
 function tableCells(line: string) {
@@ -2259,7 +2277,7 @@ function inlineMarkdown(text: string) {
     if (part.startsWith("_") && part.endsWith("_"))
       return <em key={i}>{part.slice(1, -1)}</em>;
     if (part.startsWith("`") && part.endsWith("`"))
-      return <code key={i}>{part.slice(1, -1)}</code>;
+      return <CopyCode key={i} code={part.slice(1, -1)} />;
     const link = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
     if (link)
       return (
@@ -2269,6 +2287,22 @@ function inlineMarkdown(text: string) {
       );
     return part;
   });
+}
+function CopyCode({ code }: { code: string }) {
+  const [copied, setCopied] = useState(false);
+  async function copy() {
+    await navigator.clipboard.writeText(code);
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1500);
+  }
+  return (
+    <span className="code-chip">
+      <code>{code}</code>
+      <button type="button" onClick={copy} aria-label={`Copy ${code}`}>
+        {copied ? "Copied" : "Copy"}
+      </button>
+    </span>
+  );
 }
 function Intro({ title, text }: { title: string; text: string }) {
   return (
