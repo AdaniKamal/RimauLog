@@ -4,22 +4,56 @@
 
 RimauLog is a private multi-student mentoring workspace for a six-month cloud-security journey. A mentor can switch between students, track weekly sessions, manage assignments, maintain competency report cards, and collect GitHub-ready Markdown evidence.
 
+## Project status
+
+| Item | Current status |
+|---|---|
+| Current version | **v8.1** |
+| Release stage | Usable beta / active development |
+| Last updated | 22 August 2026 |
+| Hosting | Vercel |
+| Database | Supabase PostgreSQL |
+| Authentication | Google OAuth through Supabase (PKCE) |
+| Access | Invitation-only, with mentor and student roles |
+| Invitation delivery | Manual link sharing |
+| Data mode | Live Supabase data only; no demo students or automatic login |
+
+## Version history
+
+| Version | Date | Project update | Database action |
+|---|---|---|---|
+| v1.0 | August 2026 | Initial interface prototype with a single sample student and demo data. Historical version only. | None |
+| v2.0 | August 2026 | Removed demo mode, sample students and automatic login. Connected the workspace to Supabase and Google sign-in. | Run `supabase/schema.sql` for a new project |
+| v3.0 | August 2026 | Added the invitation workflow, Pending/Accepted states, and Privacy and Terms pages. | None |
+| v4.0 | August 2026 | Corrected the invitation acceptance lifecycle and student access status. | Run `supabase/upgrade-invitation-status.sql` when upgrading from an older database |
+| v5.0 | August 2026 | Added PKCE Google OAuth and removed authentication tokens from the visible URL. | None |
+| v6.0 | August 2026 | Added secure, single-use invitation confirmation using `token_hash`. | None |
+| v7.0 | August 2026 | Expanded timetable, sessions, report cards, assignments, programme dates, progress bars and student-owned notes with mentor change approval. | Run `supabase/upgrade-mentoring-workspace.sql` |
+| v7.1 | August 2026 | Fixed expanded student-profile fields loading in the student view. | None |
+| v8.0 | 22 August 2026 | Added the monthly availability calendar, constrained meeting requests, multiple notes, competency selectors, comment deletion, and session editing/deletion. | Run `supabase/upgrade-monthly-workflow.sql` |
+| v8.1 | 22 August 2026 | Added project-status and version-history documentation and clarified the manual invitation workflow. | None |
+
+For an existing deployment, run only the migration files that have not already been applied. Do not rerun a completed migration simply because the README version changed.
+
 ## Included
 
 - Invitation-only Google sign-in through Supabase Auth
 - PKCE Google OAuth; authentication tokens are not placed in the visible URL
-- Email invitations with Pending and Accepted status
+- Manual invitation approval with Pending and Accepted access status
 - Mentor and student roles
 - Separate records for every student
 - Weekly sessions and focused next actions
 - Detailed session agendas, outcomes, gaps, feedback and next-session plans
 - Mentor timetable with student meeting requests and optional Google Calendar Appointment Schedule link
+- Monthly calendar view with free, blocked, requested and confirmed time markers
 - Assignments, evidence links and feedback
 - Mentor-only assignment authoring with Kahoot, Google Form or learning-resource links
 - Competency progress report cards
 - Mentor-set programme start/end dates, objective target, latest update and progress bar
+- Predefined competency categories with collapsible assessments and removable comments
 - Markdown notes with preview and `.md` download
 - Student-owned Markdown with mentor edit proposals requiring student approval
+- Multiple student notes with explicit `+ New note`; mentors can view the complete note list
 - Supabase Row Level Security policies
 - Responsive desktop and mobile interface
 
@@ -50,4 +84,4 @@ Google establishes identity, while Supabase invitations and database policies de
 
 Never expose `SUPABASE_SERVICE_ROLE_KEY` in browser code or commit real environment files.
 
-`SUPABASE_SERVICE_ROLE_KEY` is required in Vercel for the server-only email invitation endpoint. It must never use the `NEXT_PUBLIC_` prefix.
+The default RimauLog interface uses manual link sharing and does not require `SUPABASE_SERVICE_ROLE_KEY`. The key is needed only if you later enable the optional server-side email invitation endpoint, and it must never use the `NEXT_PUBLIC_` prefix.
