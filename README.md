@@ -1,14 +1,12 @@
 # RimauLog
 
-**Tagline:** Log progress. Build capability.
-
 RimauLog is a private multi-student mentoring workspace for a six-month cloud-security journey. A mentor can switch between students, track weekly sessions, manage assignments, maintain competency report cards, and collect GitHub-ready Markdown evidence.
 
 ## Project status
 
 | Item                | Current status                                               |
 | ------------------- | ------------------------------------------------------------ |
-| Current version     | **v9.0**                                                     |
+| Current version     | **v9.1**                                                     |
 | Release stage       | Usable beta / active development                             |
 | Last updated        | 22 August 2026                                               |
 | Hosting             | Vercel                                                       |
@@ -33,6 +31,7 @@ RimauLog is a private multi-student mentoring workspace for a six-month cloud-se
 | v8.0    | 22 August 2026 | Added the monthly availability calendar, constrained meeting requests, multiple notes, competency selectors, comment deletion, and session editing/deletion.                                                                                    | Run `supabase/upgrade-monthly-workflow.sql`                                        |
 | v8.1    | 22 August 2026 | Added project-status and version-history documentation and clarified the manual invitation workflow.                                                                                                                                            | None                                                                               |
 | v9.0    | 22 August 2026 | Added the mentor dashboard, consistent per-student progress, report-card history, identifiable timetable requests and notifications, deletable calendar activity, rich note formatting with Markdown preview, and assignment filtering/sorting. | Run `supabase/upgrade-v9-dashboard-history.sql`                                    |
+| v9.1    | 22 August 2026 | Corrected mentor-dashboard status to use each student's mentorship timeline and fixed the sidebar logo alignment.                                                                                                                               | None                                                                               |
 
 For an existing deployment, run only the migration files that have not already been applied. Do not rerun a completed migration simply because the README version changed.
 
@@ -87,7 +86,5 @@ All students, sessions, assignments, competencies and Markdown notes shown in th
 Google establishes identity, while Supabase invitations and database policies determine access. An account is approved only when its exact email exists in `public.invitations`. Students can access their own journey; mentors can manage students assigned to them.
 
 Never expose `SUPABASE_SERVICE_ROLE_KEY` in browser code or commit real environment files.
-
-The default RimauLog interface uses manual link sharing and does not require `SUPABASE_SERVICE_ROLE_KEY`. The key is needed only if you later enable the optional server-side email invitation endpoint, and it must never use the `NEXT_PUBLIC_` prefix.
 
 The default RimauLog interface uses manual link sharing and does not require `SUPABASE_SERVICE_ROLE_KEY`. The key is needed only if you later enable the optional server-side email invitation endpoint, and it must never use the `NEXT_PUBLIC_` prefix.
