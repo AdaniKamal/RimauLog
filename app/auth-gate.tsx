@@ -1,0 +1,219 @@
+"use client";
+import {
+  createClient,
+  type SupabaseClient,
+  type User,
+} from "@supabase/supabase-js";
+import Link from "next/link";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
+export type Profile = {
+  id: string;
+  email: string;
+  full_name: string | null;
+  role: "mentor" | "student";
+  approved: boolean;
+  mentor_id?: string | null;
+};
+type AppContext = { client: SupabaseClient; user: User; profile: Profile };
+const Ctx = createContext<AppContext | null>(null);
+function configuredClient() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL,
+    key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (
+    !url ||
+    !key ||
+    url.includes("YOUR_PROJECT") ||
+    key.includes("YOUR_PUBLIC")
+  )
+    return null;
+  return createClient(url, key, {
+    auth: { persistSession: true, detectSessionInUrl: true, flowType: "pkce" },
+  });
+}
+export function useRimauLog() {
+  return useContext(Ctx);
+}
+export default function AuthGate({ children }: { children: React.ReactNode }) {
+  const client = useMemo(configuredClient, []),
+    [loading, setLoading] = useState(Boolean(client)),
+    [user, setUser] = useState<User | null>(null),
+    [profile, setProfile] = useState<Profile | null>(null),
+    [error, setError] = useState("");
+  useEffect(() => {
+    if (
+      window.location.hash.includes("access_token=") ||
+      window.location.hash.includes("refresh_token=")
+    )
+      window.history.replaceState(
+        null,
+        "",
+        window.location.pathname + window.location.search,
+      );
+  }, []);
+  useEffect(() => {
+    if (!client) return;
+    let alive = true,
+      currentUserId: string | null = null;
+    async function resolve(next: User | null) {
+      if (!alive) return;
+      currentUserId = next?.id || null;
+      setLoading(true);
+      setUser(next);
+      setProfile(null);
+      if (!next) {
+        setLoading(false);
+        return;
+      }
+      if (window.location.hash)
+        window.history.replaceState(
+          null,
+          "",
+          window.location.pathname + window.location.search,
+        );
+      const { data, error } = await client!
+        .from("profiles")
+        .select("id,email,full_name,role,approved,mentor_id")
+        .eq("id", next.id)
+        .maybeSingle();
+      if (!alive) return;
+      if (error) setError(error.message);
+      setProfile(data as Profile | null);
+      if (data?.approved) {
+        const {
+          data: { session },
+        } = await client!.auth.getSession();
+        if (session)
+          fetch("/api/invitations/accept", {
+            method: "POST",
+            headers: { Authorization: `Bearer ${session.access_token}` },
+          }).catch(() => {});
+      }
+      setLoading(false);
+    }
+    client.auth.getUser().then(({ data }) => resolve(data.user));
+    const { data } = client.auth.onAuthStateChange((event, session) => {
+      const next = session?.user ?? null;
+      if (
+        next?.id === currentUserId &&
+        (event === "TOKEN_REFRESHED" || event === "SIGNED_IN")
+      )
+        return;
+      resolve(next);
+    });
+    return () => {
+      alive = false;
+      data.subscription.unsubscribe();
+    };
+  }, [client]);
+  if (!client)
+    return (
+      <AuthScreen
+        title="Supabase configuration required"
+        text="RimauLog will not open a sample dashboard. Add these variables in Vercel, then redeploy."
+      >
+        <div className="config-list">
+          <code>NEXT_PUBLIC_SUPABASE_URL</code>
+          <code>NEXT_PUBLIC_SUPABASE_ANON_KEY</code>
+          <code>NEXT_PUBLIC_SITE_URL</code>
+        </div>
+      </AuthScreen>
+    );
+  if (loading)
+    return (
+      <AuthScreen
+        title="Preparing your workspace…"
+        text="Checking your secure RimauLog access."
+      />
+    );
+  if (!user) return <Login client={client} error={error} />;
+  if (!profile?.approved)
+    return (
+      <Pending client={client} email={user.email ?? "this Google account"} />
+    );
+  return (
+    <Ctx.Provider value={{ client, user, profile }}>{children}</Ctx.Provider>
+  );
+}
+function Login({ client, error }: { client: SupabaseClient; error: string }) {
+  const [busy, setBusy] = useState(false);
+  async function go() {
+    setBusy(true);
+    const redirectTo =
+      process.env.NEXT_PUBLIC_SITE_URL || window.location.origin;
+    const { error } = await client.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo },
+    });
+    if (error) setBusy(false);
+  }
+  return (
+    <AuthScreen
+      title="Your mentoring journey, in one place."
+      text="Private session records, focused weekly actions, feedback and GitHub-ready evidence."
+    >
+      <button className="google-button" onClick={go} disabled={busy}>
+        <span>G</span>
+        {busy ? "Opening Google…" : "Continue with Google"}
+      </button>
+      <small className="access-note">
+        Invitation only. Use the Google account approved by your mentor.
+      </small>
+      {error && <p className="auth-error">{error}</p>}
+    </AuthScreen>
+  );
+}
+function Pending({ client, email }: { client: SupabaseClient; email: string }) {
+  return (
+    <AuthScreen
+      title="Access not approved yet"
+      text={`You signed in as ${email}, but this account has not been invited.`}
+    >
+      <p className="pending-help">
+        Ask the mentor to invite this exact email address, then sign in again.
+      </p>
+      <button className="google-button" onClick={() => client.auth.signOut()}>
+        Use another Google account
+      </button>
+    </AuthScreen>
+  );
+}
+function AuthScreen({
+  title,
+  text,
+  children,
+}: {
+  title: string;
+  text: string;
+  children?: React.ReactNode;
+}) {
+  return (
+    <main className="auth-page">
+      <section className="auth-panel">
+        <div className="auth-brand">
+          <b>R</b>
+          <strong>RimauLog</strong>
+        </div>
+        <span className="auth-kicker">LOG PROGRESS. BUILD CAPABILITY.</span>
+        <h1>{title}</h1>
+        <p>{text}</p>
+        {children}
+        <div className="auth-values">
+          <span>Focused</span>
+          <span>Practical</span>
+          <span>Private</span>
+        </div>
+        <div className="legal-links">
+          <Link href="/privacy">Privacy</Link>
+          <Link href="/terms">Terms</Link>
+        </div>
+      </section>
+      <aside>
+        <small>PRIVATE MENTORING WORKSPACE</small>
+        <blockquote>
+          “One objective. One practical action. One clear piece of
+          evidence—every week.”
+        </blockquote>
+      </aside>
+    </main>
+  );
+}
