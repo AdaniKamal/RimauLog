@@ -1636,6 +1636,32 @@ button {
   opacity: 0.78;
   padding-left: 12px;
 }
+.editor > .inline-approval {
+  align-items: flex-start;
+  border-top: 1px solid var(--line);
+  border-bottom: 0;
+  flex-direction: column;
+  gap: 9px;
+  height: auto;
+  padding: 16px 32px 20px;
+}
+.editor > .inline-approval > span {
+  margin-left: 0;
+}
+.inline-approval > div {
+  display: flex;
+  gap: 8px;
+}
+.editor > .inline-approval button {
+  border: 1px solid var(--line);
+  background: #fff;
+  font-weight: 700;
+}
+.editor > .inline-approval button:first-child {
+  border-color: #17302d;
+  background: #17302d;
+  color: #fff;
+}
 .markdown-preview.compact {
   min-height: 0;
   padding: 4px 0;

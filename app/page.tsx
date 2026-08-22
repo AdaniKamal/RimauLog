@@ -2119,19 +2119,20 @@ function Notes({
               value={app.profile.role === "mentor" ? proposal : body}
             />
           )}
+          {reviewingMentorEdit && (
+            <div className="inline-approval">
+              <span className="status pending">Mentor edit requested</span>
+              <strong>Review the mentor&apos;s suggested changes</strong>
+              <div>
+                <button onClick={() => decide(true)}>Accept changes</button>
+                <button className="soft" onClick={() => decide(false)}>
+                  Reject changes
+                </button>
+              </div>
+            </div>
+          )}
         </section>
       </div>
-      {app.profile.role === "student" &&
-        selected?.proposal_status === "pending" && (
-          <section className="card approval">
-            <span className="status pending">Mentor edit requested</span>
-            <h3>Review the mentor&apos;s suggested changes</h3>
-            <button onClick={() => decide(true)}>Accept changes</button>
-            <button className="soft" onClick={() => decide(false)}>
-              Reject changes
-            </button>
-          </section>
-        )}
     </>
   );
 }
@@ -2221,8 +2222,8 @@ function DiffPreview({
   original: string;
   proposed: string;
 }) {
-  const before = original.split("\n"),
-    after = proposed.split("\n");
+  const before = markdownBlocks(original),
+    after = markdownBlocks(proposed);
   const matrix = Array.from({ length: before.length + 1 }, () =>
     Array(after.length + 1).fill(0),
   );
@@ -2262,6 +2263,26 @@ function DiffPreview({
       ))}
     </section>
   );
+}
+function markdownBlocks(value: string) {
+  const lines = value.split("\n"),
+    blocks: string[] = [];
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    if (line.includes("|") && /^\s*\|?\s*:?-+/.test(lines[i + 1] || "")) {
+      const table = [line, lines[i + 1]];
+      i += 2;
+      while (i < lines.length && lines[i].includes("|")) {
+        table.push(lines[i]);
+        i++;
+      }
+      i--;
+      blocks.push(table.join("\n"));
+    } else {
+      blocks.push(line);
+    }
+  }
+  return blocks;
 }
 function tableCells(line: string) {
   return line
