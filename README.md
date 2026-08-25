@@ -5,7 +5,7 @@ RimauLog is a private multi-student mentoring workspace for a six-month cloud-se
 **WARNING:** 
 **Self-hosted project:** RimauLog does not provide a public shared service. Each user must create and manage their own Supabase, Google OAuth and Vercel configuration.
 
-## Project status
+## Project statuss
 
 | Item                | Current status                                               |
 | ------------------- | ------------------------------------------------------------ |
